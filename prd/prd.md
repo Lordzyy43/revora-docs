@@ -1079,3 +1079,265 @@ Urutan pengerjaan yang disarankan:
 Revora MVP adalah web app fullstack dengan Laravel sebagai backend REST API dan React sebagai frontend SPA. Fitur utamanya adalah customer dapat mengelola kendaraan, melakukan booking service, dan memantau status service, sementara admin dapat mengelola booking dan layanan service.
 
 Dengan scope ini, Revora sudah cukup kuat sebagai portfolio karena mencakup auth, role-based access, CRUD relasional, dashboard, tracking status, API design, dan UI modern.
+
+---
+
+## 23. Production Learning Goals
+
+Selain menjadi portfolio, Revora juga digunakan sebagai media belajar bagaimana web app dibuat dengan pendekatan production atau industry-level.
+
+Tujuan pembelajaran production:
+
+1. Memahami cara memisahkan frontend, backend, dan dokumentasi.
+2. Memahami API contract agar frontend dan backend tidak mismatch.
+3. Memahami environment development, staging, dan production.
+4. Memahami authentication flow yang aman.
+5. Memahami role-based access control.
+6. Memahami database migration, seeder, dan relational design.
+7. Memahami error handling yang konsisten.
+8. Memahami validasi data di backend dan frontend.
+9. Memahami struktur folder yang maintainable.
+10. Memahami deployment workflow.
+11. Memahami dokumentasi teknis yang rapi.
+12. Memahami testing dasar sebelum fitur dianggap selesai.
+
+---
+
+## 24. Industry-Level Development Standard
+
+Revora akan dikembangkan dengan standar yang mendekati cara kerja project profesional.
+
+### 24.1 Repository Separation
+
+Revora menggunakan tiga repository:
+
+```txt
+revora-client   -> React frontend
+revora-api      -> Laravel backend
+revora-docs     -> Documentation and API contract
+```
+
+Tujuan pemisahan repository:
+
+- Frontend dan backend dapat dikembangkan secara mandiri.
+- Dokumentasi menjadi sumber kebenaran bersama.
+- API contract dapat ditentukan sebelum implementasi.
+- Struktur project terlihat lebih profesional.
+
+### 24.2 Documentation First
+
+Sebelum fitur dibuat, dokumentasi minimal harus menjelaskan:
+
+- Tujuan fitur
+- Role yang boleh mengakses
+- Endpoint API
+- Request body
+- Response success
+- Response error
+- Status code
+- Validasi data
+- Catatan frontend
+- Catatan backend
+
+Prinsip:
+
+> Jangan coding fitur besar sebelum flow, data, dan API contract jelas.
+
+### 24.3 Environment Management
+
+Project harus membedakan environment:
+
+```txt
+local       -> berjalan di laptop developer
+staging     -> tempat testing sebelum production
+production  -> aplikasi live untuk user asli
+```
+
+File `.env` tidak boleh di-commit ke repository. Yang boleh di-commit adalah `.env.example`.
+
+Contoh environment frontend:
+
+```txt
+VITE_API_BASE_URL=http://localhost:8000/api
+```
+
+Contoh environment backend:
+
+```txt
+APP_ENV=local
+APP_URL=http://localhost:8000
+DB_DATABASE=revora
+FRONTEND_URL=http://localhost:5173
+```
+
+### 24.4 Branching Workflow
+
+Branch dasar yang disarankan:
+
+```txt
+main       -> kode stabil
+develop    -> integrasi fitur sebelum masuk main
+feature/*  -> pengembangan fitur tertentu
+fix/*      -> perbaikan bug
+```
+
+Contoh branch:
+
+```txt
+feature/auth-api
+feature/customer-vehicles
+feature/booking-flow
+fix/login-validation
+```
+
+### 24.5 Commit Convention
+
+Gunakan commit message yang jelas.
+
+Contoh:
+
+```txt
+feat: add customer vehicle CRUD API
+fix: handle invalid login response
+chore: update env example
+refactor: improve booking service layer
+```
+
+Tujuannya agar history project mudah dibaca.
+
+### 24.6 API Response Standard
+
+Backend harus mengirim response yang konsisten.
+
+Success response:
+
+```json
+{
+  "success": true,
+  "message": "Vehicle created successfully",
+  "data": {
+    "id": 1,
+    "brand": "Toyota",
+    "model": "Avanza",
+    "plate_number": "AD 1234 XX"
+  }
+}
+```
+
+Error response:
+
+```json
+{
+  "success": false,
+  "message": "Validation failed",
+  "errors": {
+    "plate_number": ["The plate number field is required."]
+  }
+}
+```
+
+### 24.7 Frontend Data Handling
+
+Frontend tidak langsung menaruh logic API di komponen halaman.
+
+Struktur yang disarankan:
+
+```txt
+pages       -> tampilan halaman
+features    -> logic per fitur
+services    -> komunikasi API
+components  -> reusable UI
+hooks       -> reusable stateful logic
+types       -> TypeScript type/interface
+```
+
+Prinsip:
+
+> Component fokus ke UI, service fokus ke API, hook fokus ke logic.
+
+### 24.8 Backend Structure Standard
+
+Backend Laravel harus menjaga pemisahan tanggung jawab.
+
+Struktur yang disarankan:
+
+```txt
+Controller       -> menerima request dan mengembalikan response
+Form Request     -> validasi input
+Model            -> representasi tabel database
+Policy/Middleware-> authorization dan role access
+Resource         -> format response API
+Service Class    -> business logic jika mulai kompleks
+Seeder           -> data awal untuk testing
+Migration        -> struktur database
+```
+
+Prinsip:
+
+> Controller jangan terlalu gemuk. Logic kompleks dipindahkan ke service class.
+
+### 24.9 Security Minimum Standard
+
+Hal penting yang harus diterapkan:
+
+1. Password harus di-hash.
+2. Endpoint admin wajib dilindungi middleware role.
+3. Customer hanya boleh mengakses data miliknya sendiri.
+4. Validasi tetap wajib di backend walaupun frontend sudah validasi.
+5. `.env` tidak boleh masuk GitHub.
+6. Error production tidak boleh menampilkan detail sensitif.
+7. API harus membatasi akses berdasarkan user login.
+8. Delete data penting sebaiknya dipertimbangkan soft delete.
+
+### 24.10 Testing Minimum Standard
+
+Minimal testing yang disarankan:
+
+Backend:
+
+- Auth register
+- Auth login
+- Vehicle CRUD
+- Booking creation
+- Admin update booking status
+- Role access protection
+
+Frontend:
+
+- Form validation manual
+- Route protection manual
+- Loading state
+- Empty state
+- Error state
+- Responsive check
+
+### 24.11 Definition of Done
+
+Sebuah fitur dianggap selesai jika:
+
+1. Requirement fitur sudah jelas.
+2. API contract sudah ditulis di revora-docs.
+3. Backend endpoint sudah dibuat.
+4. Backend validation sudah dibuat.
+5. Backend authorization sudah aman.
+6. Frontend UI sudah dibuat.
+7. Frontend terhubung dengan API.
+8. Loading, empty, dan error state tersedia.
+9. Fitur sudah dites secara manual.
+10. Dokumentasi diperbarui.
+
+### 24.12 Production Mindset
+
+Dalam project production, targetnya bukan hanya “fitur jalan”. Targetnya adalah:
+
+- Aman
+- Stabil
+- Mudah dikembangkan
+- Mudah dipahami developer lain
+- Mudah didebug
+- Mudah dideploy
+- Konsisten antara frontend, backend, dan dokumentasi
+
+Prinsip utama Revora:
+
+> Build small, document clearly, integrate carefully, and polish consistently.
